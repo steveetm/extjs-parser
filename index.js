@@ -6,7 +6,11 @@
 class extParser {
     constructor(options) {
         let dirParser = require('./lib/parseDir');
-        return new dirParser(options).parse().classMap;
+        let Promise = require('bluebird');
+        let parseDir = new dirParser(options)
+        return parseDir.parse().then(() => {
+            return Promise.resolve(parseDir.classMap);
+        });
     }
 }
 
