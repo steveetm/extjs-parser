@@ -19,34 +19,105 @@ describe('File content extract', () => {
         it(`should be ${idx + 1} comment block`, () => {
             let parser = new parseFile();
             return parser.loadFile(`test/structure/${file}`)
-                .then(parser.extractComments.bind(parser))
-                .then((comments) => {
-                    expect(comments.length).to.be.equals(idx + 1);
-                });
+                .then(parser.generateAST.bind(parser))
+                .then((ret) => {
+                    console.log(ret)
+                })
+
         });
 
     });
 });
 
-describe('Parse comments', () => {
-    it('should return all tags', () => {
-        let parser = new parseFile();
-        return parser.loadFile('test/structure/fileMisleading.js')
-            .then(parser.extractComments.bind(parser))
-            .then(parser.parseComments.bind(parser))
-            .then((result) => {
-                expect(result.length).to.be.equals(2);
-            });
+describe('Extract comments', () => {
+    let testData = require('./testData.js');
+    let Schema = require('./schema.js');
+
+    describe('Block comments', () => {
+        it('should return 1 comment block', () => {
+            let parser = new parseFile();
+            let mockData = testData.AST.comments.oneBlock.twoTags;
+            return parser.extractComments(mockData)
+                .then((result) => {
+                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 1, maxItems: 1}));
+                });
+        });
+
+        it('should return 2 comment block', () => {
+            let parser = new parseFile();
+            let mockData = testData.AST.comments.twoBlocks.twoTags;
+
+            return parser.extractComments(mockData)
+                .then((result) => {
+                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 2, maxItems: 2}));
+                });
+        });
+
+        it('should return 3 comment block', () => {
+            let parser = new parseFile();
+            let mockData = testData.AST.comments.threeBlocks.withEmptyBlock;
+            return parser.extractComments(mockData)
+                .then((result) => {
+                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 3, maxItems: 3}));
+                });
+        });
+    });
+
+    describe('Line comments', () => {
+        it('should return 1 comment block', () => {
+            let parser = new parseFile();
+            let mockData = testData.AST.comments.oneLine.twoTags;
+            return parser.extractComments(mockData)
+                .then((result) => {
+                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 1, maxItems: 1}));
+                });
+        });
+
+        it('should return 2 comment block', () => {
+            let parser = new parseFile();
+            let mockData = testData.AST.comments.twoLines.twoTags;
+            return parser.extractComments(mockData)
+                .then((result) => {
+                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 2, maxItems: 2}));
+                });
+        });
+    });
+
+    describe('Mixed comments', () => {
+        it('block-line-emptyline should return 2 comment block', () => {
+            let parser = new parseFile();
+            let mockData = testData.AST.comments.mixed.withEmptyLine;
+            return parser.extractComments(mockData)
+                .then((result) => {
+                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 2, maxItems: 2}));
+                });
+        });
+
+        it('should return 2 comment block', () => {
+            let parser = new parseFile();
+            let mockData = testData.AST.comments.mixed.withEmptyBlock;
+            console.log(mockData);
+            return parser.extractComments(mockData)
+                .then((result) => {
+                    console.log(result);
+                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 2, maxItems: 2}));
+                });
+        });
+
+        it('should return 3 comment block', () => {
+            let parser = new parseFile();
+            return parser.extractComments(testData.AST.comments.mixed.full)
+                .then((result) => {
+                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 3, maxItems: 3}));
+                });
+        });
     });
 });
 
 describe('Parse tags', () => {
     it('should find all requires', () => {
         let parser = new parseFile();
-        return parser.loadFile('test/structure/fileRequiresOnly.js')
-            .then(parser.extractComments.bind(parser))
-            .then(parser.parseComments.bind(parser))
-            .then(parser.parseTags.bind(parser))
+        return parser.parse('test/structure/fileRequiresOnly.js')
             .then(() => {
                 let mustHave = ['structure.fileB', 'structure.fileC', 'structure.fileD'];
                 expect(parser.requires).to.be.deep.equals(mustHave);
@@ -55,13 +126,28 @@ describe('Parse tags', () => {
 
     it('should find all define', () => {
         let parser = new parseFile();
-        return parser.loadFile('test/structure/fileDefineOnly.js')
-            .then(parser.extractComments.bind(parser))
-            .then(parser.parseComments.bind(parser))
-            .then(parser.parseTags.bind(parser))
+        return parser.parse('test/structure/fileDefineOnly.js')
             .then(() => {
-                let mustHave = ['structure.fileD', 'structure.fileDAlias'];
-                expect(parser.names).to.be.deep.equals(mustHave);
+                let mustHave = ['structure.fileD', 'structure.fileDAlias', 'structure.fileE'];
+                console.log(parser.names.sort());
+                expect(parser.names.sort()).to.be.deep.equals(mustHave.sort());
+            });
+    });
+
+    it('should find all define and requires', () => {
+        let parser = new parseFile();
+        return parser.parse('test/structure/fileTestAll.js')
+            .then(() => {
+                let mustHaveNames = ['structure.alias.file',
+                    'structure.file',
+                    'structure.fileClass',
+                    'structure.fileE'
+                ];
+                let mustHaveRequires = [
+                    'structure.fileA', 'structure.fileB', 'structure.fileC', 'structure.fileD'
+                ];
+                expect(parser.names.sort()).to.be.deep.equals(mustHaveNames.sort());
+                expect(parser.requires.sort()).to.be.deep.equals(mustHaveRequires.sort());
             });
     });
 });

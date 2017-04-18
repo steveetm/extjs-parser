@@ -10,4 +10,7 @@ global.sinonChai = require('sinon-chai');
 global.chai.use(global.sinonChai);
 
 global.chaiAsPromised = require("chai-as-promised");
-global.chai.use(chaiAsPromised);
+global.chai.use(global.chaiAsPromised);
+
+global.chaiJsonSchema = require('chai-json-schema');
+global.chai.use(global.chaiJsonSchema);
