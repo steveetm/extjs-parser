@@ -1,6 +1,6 @@
 {
-  "name": "ext-parser",
-  "version": "1.0.2",
+  "name": "extjs-parser",
+  "version": "1.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {

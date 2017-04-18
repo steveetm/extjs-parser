@@ -46,7 +46,6 @@ class extParser {
 
         });
         if (typeof obj === 'undefined') {
-            console.log('cannot find', className);
             return {};
         }
         let res = [];

@@ -20,10 +20,6 @@ describe('File content extract', () => {
             let parser = new parseFile();
             return parser.loadFile(`test/structure/${file}`)
                 .then(parser.generateAST.bind(parser))
-                .then((ret) => {
-                    console.log(ret)
-                })
-
         });
 
     });
@@ -96,10 +92,8 @@ describe('Extract comments', () => {
         it('should return 2 comment block', () => {
             let parser = new parseFile();
             let mockData = testData.AST.comments.mixed.withEmptyBlock;
-            console.log(mockData);
             return parser.extractComments(mockData)
                 .then((result) => {
-                    console.log(result);
                     expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 2, maxItems: 2}));
                 });
         });
@@ -129,7 +123,6 @@ describe('Parse tags', () => {
         return parser.parse('test/structure/fileDefineOnly.js')
             .then(() => {
                 let mustHave = ['structure.fileD', 'structure.fileDAlias', 'structure.fileE'];
-                console.log(parser.names.sort());
                 expect(parser.names.sort()).to.be.deep.equals(mustHave.sort());
             });
     });
