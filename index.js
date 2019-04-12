@@ -3,23 +3,46 @@
  * Created by steveetm on 2017. 04. 08..
  */
 
-let Promise = require('bluebird');
+const Promise = require('bluebird');
+const fs = require('fs');
+
+const cacheDir = './.cache';
+
 class extParser {
     constructor(options) {
         this.options = options;
         this.classMap = null;
+        this.checkDirectory(cacheDir);
         this.classMapPromise = this.getClassMap();
     }
 
+    checkDirectory(directory) {
+        try {
+            fs.statSync(directory);
+        } catch(e) {
+            fs.mkdirSync(directory);
+        }
+    }
+
     getClassMap() {
-        let Promise = require('bluebird');
         let dirParser = require('./lib/parseDir');
         let parseDir = new dirParser(this.options);
-        return parseDir.parse().then(() => {
-            this.classMapCache = parseDir.classMap;
-            this.fileMapCache = parseDir.fileMap;
-            return Promise.resolve(parseDir.classMap);
-        });
+        const version = parseDir.readVersion();
+        const cacheFile = cacheDir + '/' + version;
+        if (fs.existsSync(cacheFile)) {
+            const cachedResult = JSON.parse(fs.readFileSync(cacheFile, { encoding: 'utf-8' }));
+            this.classMapCache = cachedResult.classMap;
+            this.fileMapCache = cachedResult.fileMap;
+            return Promise.resolve(cachedResult.classMap);
+        } else {
+            return parseDir.parse().then(() => {
+                this.classMapCache = parseDir.classMap;
+                this.fileMapCache = parseDir.fileMap;
+                console.timeEnd('parsing vendor');
+                fs.writeFileSync(cacheFile, JSON.stringify(parseDir));
+                return Promise.resolve(parseDir.classMap);
+            });
+        }
     }
 
     ready() {
