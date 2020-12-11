@@ -33,29 +33,32 @@ describe('Extract comments', () => {
         it('should return 1 comment block', () => {
             let parser = new parseFile();
             let mockData = testData.AST.comments.oneBlock.twoTags;
-            return parser.extractComments(mockData)
-                .then((result) => {
-                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 1, maxItems: 1}));
-                });
+            const result = parser.extractComments(mockData)
+            expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {
+                minItems: 1,
+                maxItems: 1
+            }));
         });
 
         it('should return 2 comment block', () => {
             let parser = new parseFile();
             let mockData = testData.AST.comments.twoBlocks.twoTags;
 
-            return parser.extractComments(mockData)
-                .then((result) => {
-                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 2, maxItems: 2}));
-                });
+            const result = parser.extractComments(mockData)
+            expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {
+                minItems: 2,
+                maxItems: 2
+            }));
         });
 
         it('should return 3 comment block', () => {
             let parser = new parseFile();
             let mockData = testData.AST.comments.threeBlocks.withEmptyBlock;
-            return parser.extractComments(mockData)
-                .then((result) => {
-                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 3, maxItems: 3}));
-                });
+            const result = parser.extractComments(mockData)
+            expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {
+                minItems: 3,
+                maxItems: 3
+            }));
         });
     });
 
@@ -63,19 +66,21 @@ describe('Extract comments', () => {
         it('should return 1 comment block', () => {
             let parser = new parseFile();
             let mockData = testData.AST.comments.oneLine.twoTags;
-            return parser.extractComments(mockData)
-                .then((result) => {
-                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 1, maxItems: 1}));
-                });
+            const result = parser.extractComments(mockData)
+            expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {
+                minItems: 1,
+                maxItems: 1
+            }));
         });
 
         it('should return 2 comment block', () => {
             let parser = new parseFile();
             let mockData = testData.AST.comments.twoLines.twoTags;
-            return parser.extractComments(mockData)
-                .then((result) => {
-                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 2, maxItems: 2}));
-                });
+            const result = parser.extractComments(mockData)
+            expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {
+                minItems: 2,
+                maxItems: 2
+            }));
         });
     });
 
@@ -83,27 +88,27 @@ describe('Extract comments', () => {
         it('block-line-emptyline should return 2 comment block', () => {
             let parser = new parseFile();
             let mockData = testData.AST.comments.mixed.withEmptyLine;
-            return parser.extractComments(mockData)
-                .then((result) => {
-                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 2, maxItems: 2}));
-                });
+            const result = parser.extractComments(mockData)
+            expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, { minItems: 2, maxItems: 2 }));
         });
 
         it('should return 2 comment block', () => {
             let parser = new parseFile();
             let mockData = testData.AST.comments.mixed.withEmptyBlock;
-            return parser.extractComments(mockData)
-                .then((result) => {
-                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 2, maxItems: 2}));
-                });
+            const result = parser.extractComments(mockData)
+            expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {
+                minItems: 2,
+                maxItems: 2
+            }));
         });
 
         it('should return 3 comment block', () => {
             let parser = new parseFile();
-            return parser.extractComments(testData.AST.comments.mixed.full)
-                .then((result) => {
-                    expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {minItems: 3, maxItems: 3}));
-                });
+            const result = parser.extractComments(testData.AST.comments.mixed.full)
+            expect(result).to.be.jsonSchema(Object.assign({}, Schema.AST.comments, {
+                minItems: 3,
+                maxItems: 3
+            }));
         });
     });
 });
@@ -111,6 +116,7 @@ describe('Extract comments', () => {
 describe('Parse tags', () => {
     it('should find all requires', () => {
         let parser = new parseFile();
+        debugger;
         return parser.parse('test/structure/fileRequiresOnly.js')
             .then(() => {
                 let mustHave = ['structure.fileB', 'structure.fileC', 'structure.fileD'];
